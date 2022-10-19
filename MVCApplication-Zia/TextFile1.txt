@@ -1,3 +1,32 @@
 ﻿ https://www.c-sharpcorner.com/UploadFile/3d39b4/crud-operations-using-the-generic-repository-pattern-and-dep/
  https://www.codeproject.com/Articles/838097/CRUD-Operations-Using-the-Generic-Repository-Pat 
  https://www.tutlane.com/tutorial/aspnet-mvc/crud-operations-using-repository-pattern-in-asp-net-mvc-with-example
+ https://www.youtube.com/watch?v=O57nsLyZubc   // pager module
+ 
+ 
+ public ActionResult Index(int pg = 1)
+        {
+            IEnumerable<UserModel> users = userService.GetUsers().Select(u => new UserModel
+            {
+                FirstName = u.UserProfile.FirstName,
+                LastName = u.UserProfile.LastName,
+                Email = u.Email,
+                Address = u.UserProfile.Address,
+                ID = u.ID
+            });
+
+            const int pageSize = 10;
+            if (pg < 1) pg = 1;
+
+            int recsCount = users.Count();
+
+            var pager = new Pager(recsCount, pg, pageSize);
+
+            int recSkip = (pg - 1) * pageSize;
+
+            var data = users.Skip(recSkip).Take(pager.pageSize).ToList();
+
+            this.ViewBag.Pager = pager;
+
+            return View(data);
+        }
